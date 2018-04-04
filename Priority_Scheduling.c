@@ -2,99 +2,54 @@
 #include<stdlib.h>
 struct process
 {
-	int status;
-	int pid;
-	int priority;
-	int arr_time;
-	int burst_time;
-	int updated_burst_time;
-	int start;
-	int wait;
-	int complete;
-	int tat;
+	int id;int pri;int at;
+	int bt;int ubt;int start;int wait;int comp;int tat;
 	
 };
-void sort(struct process p[],int n)
-{
-	int i,j;
-	struct process temp;
-	for(i=0;i<n-1;i++)
-	{
-		for(j=0;j<n-i-1;j++)
-		{
-			if(p[j].arr_time>p[j+1].arr_time)
-			{
-				temp=p[j];
-				p[j]=p[j+1];
-				p[j+1]=temp;	
-			}
-		}
-	}
-}
 int main()
 {
-	int time,p,i,j,running=-1;
-	printf("Enter number of processes(less than equal to 10)\n");
+	int time,p,i,j,r,working=-1;
+	printf("Enter number of processes\n");
 	scanf("%d",&p);
-	struct process pro[p];
+	struct process pro[p+1];
+	printf("For the Processes Enter the Arrival Time Burst Time Priority\n");
 	for(i=0;i<p;i++)
 	{
-		printf("For process P %d \nEnter",i+1);
-		printf("Arrival Time Burst Time Priority\n");
-		pro[i].pid=i+1;
-		scanf("%d",&pro[i].arr_time);
-		scanf("%d",&pro[i].burst_time);
-		scanf("%d",&pro[i].priority);
-		pro[i].updated_burst_time=pro[i].burst_time;
-		pro[i].status=0;
-		pro[i].complete=0;
+		printf("For process P%d ",i+1);
+		pro[i].id=i+1;
+		scanf("%d",&pro[i].at);
+		scanf("%d",&pro[i].bt);
+		scanf("%d",&pro[i].pri);
+		pro[i].start=-1;
+		pro[i].ubt=pro[i].bt;
 	}
-	sort(pro,p);
-	printf("Process P \tArrivalTime \tBurstTime \tPriority\n");
+	pro[p].pri=INT_MAX;
+	printf("\nP AT BT Priority\n");
 	for(i=0;i<p;i++)
 	{
-		printf("%d \t%d \t%d \t%d\n",pro[i].pid,pro[i].arr_time,pro[i].burst_time,pro[i].priority);
+		printf("%d  %d  %d  %d\n",pro[i].id,pro[i].at,pro[i].bt,pro[i].pri);
 	}
-	time=pro[0].arr_time;
-	running=0;
-	while(time<20)
+	time=0;
+	working=p;
+	r=p;
+	while(r!=0)
 	{
 		for(i=0;i<p;i++)
 		{	
-			if(pro[i].status==0&&pro[running].updated_burst_time!=0)
+			if(pro[i].at<=time && pro[i].ubt!=0 && pro[i].pri<pro[working].pri)
 			{
-			if(pro[i].arr_time<=time)
-			{
-				if(pro[i].priority<pro[running].priority)
-				{
-					running=i;
-				}
-				else if(pro[i].priority==pro[running].priority)
-				{
-					if(pro[i].arr_time==pro[running].arr_time)
-					{
-						if(pro[i].updated_burst_time<pro[running].updated_burst_time)
-						{
-							running=i;
-						}
-					}
-				}
-			}
+				if(pro[i].start==-1)
+				pro[i].start=time;
+				working=i;
 			}
 		}
-		printf("At time %d Process %d is running\n",time,pro[running].pid);
-		pro[running].updated_burst_time-=1;
+		printf("At time %d Process%d is running\n",time,pro[working].id);
+		pro[working].ubt-=1;
 		time=time+1;
-		if(pro[running].updated_burst_time==0)
+		if(pro[working].ubt==0)
 		{
-			pro[running].complete=time;
-			pro[running].status=1;
+			working=p;
+			r--;
 		}
 	}
-	/*printf("Process P \tArrivalTime \tBurstTime \tPriority \tUpdated BurstTime\n");
-	for(i=0;i<p;i++)
-	{
-		printf("%d \t%d \t%d \t%d \t%d\n",pro[i].pid,pro[i].arr_time,pro[i].burst_time,pro[i].priority,pro[i].complete);
-	}*/
 }
-
